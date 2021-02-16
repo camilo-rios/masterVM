@@ -1,5 +1,6 @@
 #!/bin/bash
 # 
+clear
 echo
 printf '\e[1;34m%-6s\e[m\n' "This script will configure the interfaces for this box and the also the OBM client files. "
 printf '\e[1;34m%-6s\e[m\n' "It is assumed the first network interface (ens192) is the connection to FBB and second adapter (ens224) is the connection to the internal lan."
