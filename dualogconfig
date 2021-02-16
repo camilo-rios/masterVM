@@ -5,3 +5,4 @@ apikeyreq=`curl -s -k -X GET 'https://10.217.16.203/api/?type=keygen&user=admin&
 apikey2=${apikeyreq%"</key"*}
 echo ${apikey2#*"key>"} > /var/www/paloalto/policyrules/apitest.txt
 
+while [ $finalConfirmation = 'n' ]
