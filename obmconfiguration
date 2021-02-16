@@ -83,7 +83,8 @@ echo
 echo
 printf '\e[1;34m%-6s\e[m' "Confirm (y/n)? "
 read finalConfirmation
-done
+done  ########################## End while for finalconfirmation ###############################################
+
 echo
 printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
 sed -i  "s~A.A.A.A~$ipAddress~g" /home/mtn/sampleFiles/interfaces
