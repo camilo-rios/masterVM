@@ -1,0 +1,3 @@
+#!/bin/bash
+
+apikey = curl -k -X GET 'https://10.217.16.203/api/?type=keygen&user=admin&password=Gee33025!'
