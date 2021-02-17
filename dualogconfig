@@ -61,10 +61,15 @@ cp /home/mtn/sampleFiles/hosts /etc/hosts
 cp /home/mtn/sampleFiles/hostsTemplate /home/mtn/sampleFiles/hosts
 
 echo
-printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using "
+printf '\e[1;34m%-6s\e[m\n' "Restarting Network services"
+systemctl restart networking.service
+echo 
 
 
-#apikeyreq=`curl -s -k -X GET 'https://10.217.16.203/api/?type=keygen&user=admin&password=Gee33025!'`
+
+#printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using default GEE admin credentials"
+
+#apikeyreq=`curl -s -k -X GET 'https://paloaltofw/api/?type=keygen&user=admin&password=Gee33025!'`
 
 #apikey2=${apikeyreq%"</key"*}
 #echo ${apikey2#*"key>"} > /var/www/paloalto/policyrules/apitest.txt

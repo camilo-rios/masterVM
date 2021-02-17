@@ -1,0 +1,14 @@
+
+username="admin"
+password="Gee33025!"
+apikeyreq=`curl -m 3 -s -k -X GET 'https://paloaltofw/api/?type=keygen&user='$username'&password='$password''`
+echo
+#echo $apikeyreq
+
+if [[ "$apikeyreq" == *'error'* ]]
+then
+	echo "Please check error"
+else
+	apikey2=${apikeyreq%"</key"*}
+	echo ${apikey2#*"key>"}
+fi
