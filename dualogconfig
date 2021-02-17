@@ -38,23 +38,30 @@ echo "PA interface (ens256) IP : "$dualogIpAddress
 echo "Paloalto FW IP (Paloalto FW IP used to send API calls ) : $paloaltoIP"
 printf '\e[1;34m%-6s\e[m' "Confirm (y/n)? "
 read finalConfirmation
-done
+done   ########### finalconfirmation while  #################
+
+
 ############### interface file configuration with third interface ###########
 printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
 echo
-echo  >> /home/mtn/sampleFiles/interfaces
-echo  >> /home/mtn/sampleFiles/interfaces 
-echo  "auto ens256" >> /home/mtn/sampleFiles/interfaces 
-echo  "iface ens256 inet static" >> /home/mtn/sampleFiles/interfaces 
-echo -e "\taddress $dualogIpAddress" >> /home/mtn/sampleFiles/interfaces
+echo  >> /etc/network/interfaces
+echo  >> /etc/network/interfaces
+echo  "auto ens256" >> /etc/network/interfaces
+echo  "iface ens256 inet static" >> /etc/network/interfaces
+echo -e "\taddress $dualogIpAddress" >> /etc/network/interfaces
 ###################################################################################
 
 ########################## /etc/hosts file configuration
 sed -i "s~X.Y.Z.P~${dualogIpAddress%/*}~g" /home/mtn/sampleFiles/hosts
 sed -i "s~A.B.C.D~$paloaltoIP~g" /home/mtn/sampleFiles/hosts
 
+echo
+printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
+cp /home/mtn/sampleFiles/hosts /etc/hosts
+cp /home/mtn/sampleFiles/hostsTemplate /home/mtn/sampleFiles/hosts
 
-
+echo
+printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using "
 
 
 #apikeyreq=`curl -s -k -X GET 'https://10.217.16.203/api/?type=keygen&user=admin&password=Gee33025!'`
