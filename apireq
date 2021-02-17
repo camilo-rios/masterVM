@@ -1,16 +1,34 @@
 
-printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using default GEE admin credentials"
+printf '\e[1;34m%-6s\e[m' "Requesting API key to Paloalto FW. Use default credentials  (y/n)?"
+read credsQuestion
 
-username="admin"
-password="Gee33025!"
+if [[ "$credsQuestion" == 'y' ]]
+then
+	username="admin"
+	password="Gee33025!"
+else
+	printf '\e[1;34m%-6s\e[m' "Enter username  = "
+	read username
+	printf '\e[1;34m%-6s\e[m' "Enter password  = "
+	read password
+fi
+
 apikeyreq=`curl -m 3 -s -k -X GET 'https://paloaltofw/api/?type=keygen&user='$username'&password='$password''`
 echo
 #echo $apikeyreq
 
 if [[ "$apikeyreq" == *'Invalid Credential'* ]]
 then
-	echo "Please check credentials 
-else
-	apikey2=${apikeyreq%"</key"*}
-	echo ${apikey2#*"key>"}
+	printf '\e[1;31m%-6s\e[m\n'  "Please check credentials and run the script again (vmconfiguration) and select 'Get API key'."
+elif [[ "$apikeyreq" ==  ''  ]]
+	then
+		printf '\e[1;31m%-6s\e[m\n'  "Connection timeout. Please verify there is connectivity to the PaloAlto FW and run the script again (vmconfiguration) and select 'Get API key.'"
+		echo
+		
+elif [[ "$apikeyreq" == *'success'* ]]
+	then
+		printf '\e[1;34m%-6s\e[m\n'  "API key query successful. Setting api key file" 
+		apikey2=${apikeyreq%"</key"*}
+		echo ${apikey2#*"key>"}  > /var/www/paloalto/policyrules/apitest.txt
+else  printf '\e[1;31m%-6s\e[m\n'  "There was an unknow error. Please try again"
 fi
