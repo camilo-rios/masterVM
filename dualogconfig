@@ -27,9 +27,13 @@ do
             fi
         done
 
+printf '\e[1;34m%-6s\e[m' "Enter Paloalto FW IP address (this is the address assigned to receive API calls) "
+read paloaltoIP
+
 echo
 printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
 echo "PA interface (ens256) IP : "$dualogIpAddress
+echo "Paloalto FW IP (Paloalto FW IP used to send API calls)"
 printf '\e[1;34m%-6s\e[m' "Confirm (y/n)? "
 read finalConfirmation
 done
