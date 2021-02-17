@@ -1,7 +1,53 @@
 #!/bin/bash
 
-apikeyreq=`curl -s -k -X GET 'https://10.217.16.203/api/?type=keygen&user=admin&password=Gee33025!'`
+echo
+printf '\e[1;34m%-6s\e[m\n' "Configuration for dualog functionality"
+printf '\e[1;34m%-6s\e[m\n' "You will need IP address for the Paloalto FW and credentials if default are not being used"
+printf '\e[1;34m%-6s\e[m\n' "You will also need the IP address for the third interface (ens256) which will be use to coomunicate with Paloalto FW"
+echo
 
-apikey2=${apikeyreq%"</key"*}
-echo ${apikey2#*"key>"} > /var/www/paloalto/policyrules/apitest.txt
+
+finalConfirmation='n'
+while [ $finalConfirmation = 'n' ]
+do
+
+############### Block to assign IP to the third interface #####################################
+    correctIP='n'
+    while [ $correctIP == 'n' ]
+        do
+            printf '\e[1;34m%-6s\e[m' "Please enter IP for third interface - ens256  (A.B.C.D/Z format) : "
+            read dualogIpAddress 
+            if [[ "$dualogIpAddress" != *"/"* ]]
+            then
+                printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again "
+                #printf '\e[1;34m%-6s\e[m' "Enter native vlan IP for secondary interface (A.B.C.D/Z format) : "
+                #read nativeIpAddress
+            else
+                correctIP='y'
+            fi
+        done
+
+echo
+printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
+echo "PA interface (ens256) IP : "$dualogIpAddress
+printf '\e[1;34m%-6s\e[m' "Confirm (y/n)? "
+read finalConfirmation
+done
+printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
+echo
+echo  >> /home/mtn/sampleFiles/interfaces
+echo  >> /home/mtn/sampleFiles/interfaces 
+echo  "auto ens256" >> /home/mtn/sampleFiles/interfaces 
+echo  "iface ens256 inet static" >> /home/mtn/sampleFiles/interfaces 
+echo -e "\taddress $dualogIpAddress" >> /home/mtn/sampleFiles/interfaces
+
+
+
+
+#apikeyreq=`curl -s -k -X GET 'https://10.217.16.203/api/?type=keygen&user=admin&password=Gee33025!'`
+
+#apikey2=${apikeyreq%"</key"*}
+#echo ${apikey2#*"key>"} > /var/www/paloalto/policyrules/apitest.txt
+
+
 
