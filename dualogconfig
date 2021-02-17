@@ -27,16 +27,19 @@ do
             fi
         done
 
-printf '\e[1;34m%-6s\e[m' "Enter Paloalto FW IP address (this is the address assigned to receive API calls) "
+#########################################################################################################
+echo
+printf '\e[1;34m%-6s\e[m' "Enter Paloalto FW IP address (this is the address assigned to receive API calls - A.B.C.D format) "
 read paloaltoIP
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
 echo "PA interface (ens256) IP : "$dualogIpAddress
-echo "Paloalto FW IP (Paloalto FW IP used to send API calls)"
+echo "Paloalto FW IP (Paloalto FW IP used to send API calls ) : $paloaltoIP"
 printf '\e[1;34m%-6s\e[m' "Confirm (y/n)? "
 read finalConfirmation
 done
+############### interface file configuration with third interface ###########
 printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
 echo
 echo  >> /home/mtn/sampleFiles/interfaces
@@ -44,6 +47,12 @@ echo  >> /home/mtn/sampleFiles/interfaces
 echo  "auto ens256" >> /home/mtn/sampleFiles/interfaces 
 echo  "iface ens256 inet static" >> /home/mtn/sampleFiles/interfaces 
 echo -e "\taddress $dualogIpAddress" >> /home/mtn/sampleFiles/interfaces
+###################################################################################
+
+########################## /etc/hosts file configuration
+sed -i "s~X.Y.Z.P~${dualogIpAddress%/*}~g" /home/mtn/sampleFiles/hosts
+sed -i "s~A.B.C.D~$paloaltoIP~g" /home/mtn/sampleFiles/hosts
+
 
 
 
