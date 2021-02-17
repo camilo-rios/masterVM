@@ -2,7 +2,7 @@
 # 
 clear
 echo
-printf '\e[1;34m%-6s\e[m\n' "This script will configure the interfaces for this box and the also the OBM client files. "
+printf '\e[1;34m%-6s\e[m\n' "This section will configure the interfaces for this box and also the OBM client files. "
 printf '\e[1;34m%-6s\e[m\n' "It is assumed the first network interface (ens192) is the connection to FBB and second adapter (ens224) is the connection to the internal lan."
 echo
 finalConfirmation='n'
@@ -108,4 +108,4 @@ echo
 printf '\e[1;34m%-6s\e[m\n' "Please verify IPTABLES NAT rule on interface ens224 is set:  "
 iptables -t nat -L POSTROUTING  -n -vvv
 echo
-printf '\e[1;34m%-6s\e[m\n' "if there was any error running the script , please start over entering 'obmconfiguration' in the shell prompt"
+printf '\e[1;34m%-6s\e[m\n' "if there was any error running the script , please start over entering 'vmconfiguration' in the shell prompt"
