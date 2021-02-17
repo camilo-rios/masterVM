@@ -1,13 +1,15 @@
 
+printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using default GEE admin credentials"
+
 username="admin"
 password="Gee33025!"
 apikeyreq=`curl -m 3 -s -k -X GET 'https://paloaltofw/api/?type=keygen&user='$username'&password='$password''`
 echo
 #echo $apikeyreq
 
-if [[ "$apikeyreq" == *'error'* ]]
+if [[ "$apikeyreq" == *'Invalid Credential'* ]]
 then
-	echo "Please check error"
+	echo "Please check credentials 
 else
 	apikey2=${apikeyreq%"</key"*}
 	echo ${apikey2#*"key>"}
