@@ -1,0 +1,28 @@
+clear
+printf '\e[1;32m%-6s\e[m\n' "Please select the option accordingly:"
+printf '\e[1;34m%-6s\e[m\n' "1. Configure VM as OBM Client only"
+printf '\e[1;34m%-6s\e[m\n' "2. Configure VM as OBM Client and Dualog switch server"
+printf '\e[1;34m%-6s\e[m\n' "3. Get Paloalto API key"
+read option
+
+
+case $option in 
+
+    1)
+    obmconfiguration
+    ;;
+
+    2)
+    obmconfiguration
+    dualogconfig
+    apireq
+    ;;
+
+    3)
+    apireq
+    ;;
+esac
+
+
+
+
