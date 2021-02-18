@@ -102,8 +102,9 @@ cp /home/mtn/sampleFiles/clientTemplate.conf /home/mtn/sampleFiles/client.conf
 cp /home/mtn/sampleFiles/loginTemplate.conf /home/mtn/sampleFiles/login.conf
 echo
 printf '\e[1;34m%-6s\e[m\n' "Restarting Network services and openvpn services"
-/etc/init.d/openvpn restart
 systemctl restart networking.service
+/etc/init.d/openvpn restart
+
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please verify IPTABLES NAT rule on interface ens224 is set:  "
 iptables -t nat -L POSTROUTING  -n -vvv
