@@ -1,18 +1,13 @@
 #!/bin/bash
 
-printf '\e[1;34m%-6s\e[m' "Requesting API key to Paloalto FW. Use default credentials  (y/n)?"
-read credsQuestion
+printf '\e[1;34m%-6s\e[m' "Requesting API key to Paloalto FW..."
+echo
 
-if [[ $credsQuestion == 'y' ]]
-then
-	username="admin"
-	password="Gee33025!"
-else
-	printf '\e[1;34m%-6s\e[m' "Enter username  = "
-	read username
-	printf '\e[1;34m%-6s\e[m' "Enter password  = "
-	read password
-fi
+printf '\e[1;34m%-6s\e[m' "Enter Paloalto username  = "
+read username
+printf '\e[1;34m%-6s\e[m' "Enter Paloalto password  = "
+read password
+
 
 apikeyreq=`curl -m 3 -s -k -X GET 'https://paloaltofw/api/?type=keygen&user='$username'&password='$password''`
 echo
