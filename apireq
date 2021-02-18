@@ -1,8 +1,9 @@
+#!/bin/bash
 
 printf '\e[1;34m%-6s\e[m' "Requesting API key to Paloalto FW. Use default credentials  (y/n)?"
 read credsQuestion
 
-if [[ "$credsQuestion" == 'y' ]]
+if [[ $credsQuestion == 'y' ]]
 then
 	username="admin"
 	password="Gee33025!"
@@ -17,7 +18,7 @@ apikeyreq=`curl -m 3 -s -k -X GET 'https://paloaltofw/api/?type=keygen&user='$us
 echo
 #echo $apikeyreq
 
-if [[ "$apikeyreq" == *'Invalid Credential'* ]]
+if [[ $apikeyreq == *'Invalid Credential'* ]]
 then
 	printf '\e[1;31m%-6s\e[m\n'  "Please check credentials and run the script again (vmconfiguration) and select 'Get API key'."
 elif [[ "$apikeyreq" ==  ''  ]]
