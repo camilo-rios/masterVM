@@ -92,6 +92,7 @@ sed -i  "s~GA.GA.GA.GA~$gwAddress~g" /home/mtn/sampleFiles/interfaces
 sed -i -e "s~B.B.B.B~$nativeIpAddress~g" /home/mtn/sampleFiles/interfaces
 sed -i -e "s~portNumber~$port~g" /home/mtn/sampleFiles/client.conf 
 sed -i -e "s~username~$username~g" /home/mtn/sampleFiles/login.conf
+sed -i "s~X.X.X.X~$ipAddress~g" /home/mtn/sampleFiles/hosts
 echo
 printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
 cp /home/mtn/sampleFiles/interfaces /etc/network/interfaces
