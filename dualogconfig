@@ -2,7 +2,7 @@
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Configuration for dualog functionality."
-printf '\e[1;34m%-6s\e[m\n' "You will need IP address for the Paloalto FW and credentials if default are not being used."
+printf '\e[1;34m%-6s\e[m\n' "You will need IP address for the Paloalto FW and credentials to it."
 printf '\e[1;34m%-6s\e[m\n' "You will also need the IP address for this VM third interface (ens256) which will be used to communicate with Paloalto FW."
 echo
 
@@ -61,7 +61,7 @@ cp /home/mtn/sampleFiles/hosts /etc/hosts
 cp /home/mtn/sampleFiles/hostsTemplate /home/mtn/sampleFiles/hosts
 
 echo
-printf '\e[1;34m%-6s\e[m\n' "Restarting Network services"
+printf '\e[1;34m%-6s\e[m\n' "Restarting Network services. Please wait."
 systemctl restart networking.service
 echo 
 

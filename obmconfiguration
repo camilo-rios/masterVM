@@ -3,41 +3,20 @@
 clear
 echo
 printf '\e[1;34m%-6s\e[m\n' "This section will configure the interfaces for this box and also the OBM client files. "
-printf '\e[1;34m%-6s\e[m\n' "It is assumed the first network interface (ens192) is the connection to FBB and second adapter (ens224) is the connection to the internal lan."
+printf '\e[1;34m%-6s\e[m\n' "Interface distribution "
+printf '\e[1;34m%-6s\e[m\n' "First interface (ens192) ->  Vlan 1 (internal devices for OBM)"
+printf '\e[1;34m%-6s\e[m\n' "Second interface (ens224) ->  Vlan 2 (management)"
+printf '\e[1;34m%-6s\e[m\n' "Third interface (ens256) ->  FBB (openvpn tunnel)"
 echo
 finalConfirmation='n'
 while [ $finalConfirmation = 'n' ]
 do
 echo
-printf '\e[1;34m%-6s\e[m'  "Please confirm FBB interface IP is 192.168.0.5 (default) (y/n)?  "
-read confirmation
-if [[ $confirmation == 'y' ]]
- then
- 	#echo Confirmation: $confirmation
-	ipAddress='192.168.0.5/24'
-	gwAddress='192.168.0.1'
- else
-	correctIP='n'
-	while [ $correctIP == 'n' ]
-	do
-		printf '\e[1;34m%-6s\e[m'  "Please enter FBB IP address - interface ens192(A.B.C.D/Z format) : "
-		read ipAddress
-		if [[ "$ipAddress" != *"/"* ]]
-		then
-			printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again: "
-		else
-			correctIP='y'
-		fi
-	done
-	 printf '\e[1;34m%-6s\e[m' "Please enter FBB default gateway IP : "
-	 read gwAddress
- fi
-
-###### This section gets the IP for the secondary interface and makes sure it is entered properly
+###### This section gets the IP for the primary interface and makes sure it is entered properly
 correctIP='n'
 while [ $correctIP == 'n' ]
 	do
-		printf '\e[1;34m%-6s\e[m' "Please enter native vlan IP for secondary interface (A.B.C.D/Z format) : "
+		printf '\e[1;34m%-6s\e[m' "Please enter native vlan IP for first  interface (A.B.C.D/Z format). This IP should end in .38 : "
 		read nativeIpAddress 
 		if [[ "$nativeIpAddress" != *"/"* ]]
 		then
@@ -50,13 +29,64 @@ while [ $correctIP == 'n' ]
 	done
 
 ######### This section gets the port to use for the OBM tunnel. It is built using the second octet and the last two digits of the subnet network 
+
+###### This section gets the IP for the secondary interface and makes sure it is entered properly
+correctIP='n'
+while [ $correctIP == 'n' ]
+	do
+		printf '\e[1;34m%-6s\e[m' "Please enter vlan IP for secondary interface - vlan 2(A.B.C.D/Z format). This IP should end in .38 : "
+		read  vlan2IPaddress
+		if [[ "$vlan2IPaddress" != *"/"* ]]
+		then
+			printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again "
+			#printf '\e[1;34m%-6s\e[m' "Enter native vlan IP for secondary interface (A.B.C.D/Z format) : "
+			#read nativeIpAddress
+		else
+			correctIP='y'
+		fi
+	done
+
+######### This section gets the port to use for the OBM tunnel. It is built using the second octet and the last two digits of the subnet network 
+
+
+ipAddress='192.168.0.120/24'
+gwAddress='192.168.0.1'
+# printf '\e[1;34m%-6s\e[m'  "Please confirm FBB interface IP is 192.168.0.5 (default) (y/n)?  "
+# read confirmation
+# if [[ $confirmation == 'y' ]]
+#  then
+#  	#echo Confirmation: $confirmation
+# 	ipAddress='192.168.0.5/24'
+# 	gwAddress='192.168.0.1'
+#  else
+# 	correctIP='n'
+# 	while [ $correctIP == 'n' ]
+# 	do
+# 		printf '\e[1;34m%-6s\e[m'  "Please enter FBB IP address - interface ens192(A.B.C.D/Z format) : "
+# 		read ipAddress
+# 		if [[ "$ipAddress" != *"/"* ]]
+# 		then
+# 			printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again: "
+# 		else
+# 			correctIP='y'
+# 		fi
+# 	done
+# 	 printf '\e[1;34m%-6s\e[m' "Please enter FBB default gateway IP : "
+# 	 read gwAddress
+#  fi
+
+
+####### this section extracts the port to be used for OBM connection
+####### it uses the last two digits of the SUBNET IP
 while IFS=  read -r line
 do
 	if [[ "$line" == *"Network address"* ]];
 	then 
 		#echo $line
 		A="$(cut -d'.' -f2 <<<"$line")"
+		B1="$(cut -d'.' -f3 <<<"$line")"
 		B="$(cut -d'.' -f4 <<<"$line")"
+		gwCorporate="10."$A"."$B1".33"
 		if [ $B -eq 0 ]
 		then 
 			port=$A'00'
@@ -74,9 +104,8 @@ read username
 #echo "port: " $port
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
-echo "FBB interface (ens192) IP : "$ipAddress
-echo "FBB GW IP :  "$gwAddress 
-echo "Native vlan interface (ens224) IP  : "$nativeIpAddress
+echo "vlan 1interface (ens192) IP  : "$nativeIpAddress
+echo "vlan 2 interface (ens224) IP  : "$vlan2IPaddress
 echo "Username for VPN authentication : "$username
 printf "Port number for VPN connection (this is the port to be configured in the OBM GUI): "$port
 echo
@@ -87,25 +116,27 @@ done  ########################## End while for finalconfirmation ###############
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
-sed -i  "s~A.A.A.A~$ipAddress~g" /home/mtn/sampleFiles/interfaces
-sed -i  "s~GA.GA.GA.GA~$gwAddress~g" /home/mtn/sampleFiles/interfaces
-sed -i -e "s~B.B.B.B~$nativeIpAddress~g" /home/mtn/sampleFiles/interfaces
-sed -i -e "s~portNumber~$port~g" /home/mtn/sampleFiles/client.conf 
-sed -i -e "s~username~$username~g" /home/mtn/sampleFiles/login.conf
-sed -i "s~X.X.X.X~$ipAddress~g" /home/mtn/sampleFiles/hosts
+sed -i  "s~A.A.A.A~$ipAddress~g" /usr/local/src/sampleFiles/interfaces
+sed -i  "s~GA.GA.GA.GA~$gwAddress~g" /usr/local/src/sampleFiles/interfaces
+sed -i -e "s~B.B.B.B~$nativeIpAddress~g" /usr/local/src/sampleFiles/interfaces
+sed -i -e "s~C.C.C.C~$vlan2IPaddress~g" /usr/local/src/sampleFiles/interfaces
+sed -i -e "s~portNumber~$port~g" /usr/local/src/sampleFiles/client.conf 
+sed -i -e "s~username~$username~g" /usr/local/src/sampleFiles/login.conf
+sed -i "s~X.X.X.X~$ipAddress~g" /usr/local/src/sampleFiles/hosts
+
 echo
 printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
-cp /home/mtn/sampleFiles/interfaces /etc/network/interfaces
-cp /home/mtn/sampleFiles/client.conf /etc/openvpn/client.conf
-cp /home/mtn/sampleFiles/login.conf /etc/openvpn/login.conf
-cp /home/mtn/sampleFiles/interfacesTemplate /home/mtn/sampleFiles/interfaces
-cp /home/mtn/sampleFiles/clientTemplate.conf /home/mtn/sampleFiles/client.conf
-cp /home/mtn/sampleFiles/loginTemplate.conf /home/mtn/sampleFiles/login.conf
+cp /usr/local/src/sampleFiles/interfaces /etc/network/interfaces
+cp /usr/local/src/sampleFiles/client.conf /etc/openvpn/client.conf
+cp /usr/local/src/sampleFiles/login.conf /etc/openvpn/login.conf
+cp /usr/local/src/sampleFiles/interfacesTemplate /usr/local/src/sampleFiles/interfaces
+cp /usr/local/src/sampleFiles/clientTemplate.conf /usr/local/src/sampleFiles/client.conf
+cp /usr/local/src/sampleFiles/loginTemplate.conf /usr/local/src/sampleFiles/login.conf
 echo
-printf '\e[1;34m%-6s\e[m\n' "Restarting Network services and openvpn services"
+printf '\e[1;34m%-6s\e[m\n' "Restarting Network services and openvpn services.Please wait."
 systemctl restart networking.service
 /etc/init.d/openvpn restart
-
+ip route add 10.200.0.0/16 via $gwCorporate
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please verify IPTABLES NAT rule on interface ens224 is set:  "
 iptables -t nat -L POSTROUTING  -n -vvv
