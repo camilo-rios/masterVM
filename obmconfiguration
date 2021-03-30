@@ -51,29 +51,6 @@ while [ $correctIP == 'n' ]
 
 ipAddress='192.168.0.120/24'
 gwAddress='192.168.0.1'
-# printf '\e[1;34m%-6s\e[m'  "Please confirm FBB interface IP is 192.168.0.5 (default) (y/n)?  "
-# read confirmation
-# if [[ $confirmation == 'y' ]]
-#  then
-#  	#echo Confirmation: $confirmation
-# 	ipAddress='192.168.0.5/24'
-# 	gwAddress='192.168.0.1'
-#  else
-# 	correctIP='n'
-# 	while [ $correctIP == 'n' ]
-# 	do
-# 		printf '\e[1;34m%-6s\e[m'  "Please enter FBB IP address - interface ens192(A.B.C.D/Z format) : "
-# 		read ipAddress
-# 		if [[ "$ipAddress" != *"/"* ]]
-# 		then
-# 			printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again: "
-# 		else
-# 			correctIP='y'
-# 		fi
-# 	done
-# 	 printf '\e[1;34m%-6s\e[m' "Please enter FBB default gateway IP : "
-# 	 read gwAddress
-#  fi
 
 
 ####### this section extracts the port to be used for OBM connection

@@ -3,10 +3,12 @@
 printf '\e[1;34m%-6s\e[m' "Requesting API key to Paloalto FW..."
 echo
 
-printf '\e[1;34m%-6s\e[m' "Enter Paloalto username  = "
-read username
-printf '\e[1;34m%-6s\e[m' "Enter Paloalto password  = "
-read password
+#printf '\e[1;34m%-6s\e[m' "Enter Paloalto username  = "
+#read username
+#printf '\e[1;34m%-6s\e[m' "Enter Paloalto password  = "
+#read password
+username="api-user"
+password="Mtn33025!"
 
 
 apikeyreq=`curl -m 3 -s -k -X GET 'https://paloaltofw/api/?type=keygen&user='$username'&password='$password''`
