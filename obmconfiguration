@@ -16,7 +16,7 @@ echo
 correctIP='n'
 while [ $correctIP == 'n' ]
 	do
-		printf '\e[1;34m%-6s\e[m' "Please enter native vlan IP for first  interface (A.B.C.D/Z format). This IP should end in .38 : "
+		printf '\e[1;34m%-6s\e[m' "Please enter native vlan IP for first  interface (A.B.C.D/Z format). This is the 6th IP address in the subnet : "
 		read nativeIpAddress 
 		if [[ "$nativeIpAddress" != *"/"* ]]
 		then
@@ -34,7 +34,7 @@ while [ $correctIP == 'n' ]
 correctIP='n'
 while [ $correctIP == 'n' ]
 	do
-		printf '\e[1;34m%-6s\e[m' "Please enter vlan IP for secondary interface - vlan 2(A.B.C.D/Z format). This IP should end in .38 : "
+		printf '\e[1;34m%-6s\e[m' "Please enter vlan IP for secondary interface - vlan 2(A.B.C.D/Z format). This is the 6th IP address in the subnet : "
 		read  vlan2IPaddress
 		if [[ "$vlan2IPaddress" != *"/"* ]]
 		then
@@ -49,7 +49,7 @@ while [ $correctIP == 'n' ]
 ######### This section gets the port to use for the OBM tunnel. It is built using the second octet and the last two digits of the subnet network 
 
 
-ipAddress='192.168.0.120/24'
+ipAddress='192.168.0.120/24'  ###3  Static IPs assigned for FBB
 gwAddress='192.168.0.1'
 
 
@@ -60,16 +60,20 @@ do
 	if [[ "$line" == *"Network address"* ]];
 	then 
 		#echo $line
-		A="$(cut -d'.' -f2 <<<"$line")"
-		B1="$(cut -d'.' -f3 <<<"$line")"
-		B="$(cut -d'.' -f4 <<<"$line")"
-		gwCorporate="10."$A"."$B1".33"
-		if [ $B -eq 0 ]
-		then 
-			port=$A'00'
-			#echo "port: " $port
+		secondOctet="$(cut -d'.' -f2 <<<"$line")"
+		thirdOctet="$(cut -d'.' -f3 <<<"$line")"
+		fourthOctet="$(cut -d'.' -f4 <<<"$line")"
+		gwCorporate="10."$secondOctet"."$thirdOctet"."$((fourthOctet+1))"" ### default gw  is next IP after the subnet network
+		port=$((thirdOctet*8))  
+		port=$((port+ $((fourthOctet/32)) ))  #### port is calculated based on the third octect and the fourth octect
+		if [[ $port -lt 10 ]]                 #### since there are 8 subnets for each /24 subnet then we do groups of 8  
+		then
+			port=${secondOctet: -2}'00'$port
+		elif [[ $port -eq 10 || ($port -gt 10 && $port -lt 100) ]]
+		then
+			port=${secondOctet: -2}'0'$port
 		else
-			port=$A${B: -2}
+			port=${secondOctet: -2}$port
 		fi
 	fi
 done < <(sipcalc  $nativeIpAddress)
