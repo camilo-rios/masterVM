@@ -77,10 +77,11 @@ do
 		fi
 	fi
 done < <(sipcalc  $nativeIpAddress)
+gwVlan2=${vlan2IPaddress%.*}".""$((fourthOctet+1))"
 
 ##########
 echo
-printf '\e[1;34m%-6s\e[m' "Enter the username for VPN authentication. ThreeLetterCustomer_VesselName (ex. NAK_Al_Gharrafa) : "
+printf '\e[1;34m%-6s\e[m' "Enter the username for VPN authentication. ThreeLetterCustomer-VesselName (ex. NAK-AlGharrafa) : "
 read username
 #echo "port: " $port
 echo 
@@ -100,10 +101,12 @@ printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
 sed -i  "s~A.A.A.A~$ipAddress~g" /usr/local/src/sampleFiles/interfaces
 sed -i  "s~GA.GA.GA.GA~$gwAddress~g" /usr/local/src/sampleFiles/interfaces
 sed -i -e "s~B.B.B.B~$nativeIpAddress~g" /usr/local/src/sampleFiles/interfaces
+sed -i -e "s~gwCorporate~$gwCorporate~g" /usr/local/src/sampleFiles/interfaces
+sed -i -e "s~gwVlan2~$gwVlan2~g" /usr/local/src/sampleFiles/interfaces
 sed -i -e "s~C.C.C.C~$vlan2IPaddress~g" /usr/local/src/sampleFiles/interfaces
 sed -i -e "s~portNumber~$port~g" /usr/local/src/sampleFiles/client.conf 
 sed -i -e "s~username~$username~g" /usr/local/src/sampleFiles/login.conf
-sed -i "s~X.X.X.X~$ipAddress~g" /usr/local/src/sampleFiles/hosts
+sed -i "s~masterVM~$username"-masterVM"~g" /etc/hosts
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
@@ -115,9 +118,10 @@ cp /usr/local/src/sampleFiles/clientTemplate.conf /usr/local/src/sampleFiles/cli
 cp /usr/local/src/sampleFiles/loginTemplate.conf /usr/local/src/sampleFiles/login.conf
 echo
 printf '\e[1;34m%-6s\e[m\n' "Restarting Network services and openvpn services.Please wait."
+hostamectl set-hostname $username"-masterVM"
 systemctl restart networking.service
 /etc/init.d/openvpn restart
-ip route add 10.200.0.0/16 via $gwCorporate
+
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please verify IPTABLES NAT rule on interface ens224 is set:  "
 iptables -t nat -L POSTROUTING  -n -vvv
