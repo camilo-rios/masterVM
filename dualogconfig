@@ -2,43 +2,7 @@
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Configuring for dualog functionality."
-#printf '\e[1;34m%-6s\e[m\n' "You will need IP address for the Paloalto FW and credentials to it."
-#printf '\e[1;34m%-6s\e[m\n' "You will also need the IP address for this VM third interface (ens256) which will be used to communicate with Paloalto FW."
-#echo
-
-
-# finalConfirmation='n'
-# while [ $finalConfirmation = 'n' ]
-# do
-
-# ############### Block to assign IP to the third interface #####################################
-#     correctIP='n'
-#     while [ $correctIP == 'n' ]
-#         do
-#             printf '\e[1;34m%-6s\e[m' "Please enter IP for third interface - ens256  (A.B.C.D/Z format) : "
-#             read dualogIpAddress 
-#             if [[ "$dualogIpAddress" != *"/"* ]]
-#             then
-#                 printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again "
-#                 #printf '\e[1;34m%-6s\e[m' "Enter native vlan IP for secondary interface (A.B.C.D/Z format) : "
-#                 #read nativeIpAddress
-#             else
-#                 correctIP='y'
-#             fi
-#         done
-
-# #########################################################################################################
-# echo
-# printf '\e[1;34m%-6s\e[m' "Enter Paloalto FW IP address (this is the address assigned to receive API calls - A.B.C.D format) "
-# read paloaltoIP
-
 echo
-#printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
-#echo "This VM third interface (ens256) IP : "$dualogIpAddress
-#echo "Paloalto FW IP (Paloalto FW IP used to send API calls ) : $paloaltoIP"
-#printf '\e[1;34m%-6s\e[m' "Confirm (y/n)? "
-#read finalConfirmation
-#done   ########### finalconfirmation while  #################
 
 
 ############### interface file configuration with fourth interface -- receives http request ###########
@@ -52,8 +16,6 @@ echo -e "\taddress 10.1.1.80/24" >> /etc/network/interfaces
 ###################################################################################
 
 ############### interface file configuration with fifth interface -- sends API calls###########
-#printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
-#echo
 echo  >> /etc/network/interfaces
 echo  >> /etc/network/interfaces
 echo  "auto ens193" >> /etc/network/interfaces
@@ -62,14 +24,13 @@ echo -e "\taddress 10.10.10.2/24" >> /etc/network/interfaces
 ###################################################################################
 
 ########################## /etc/hosts file configuration
-#sed -i "s~X.Y.Z.P~${dualogIpAddress%/*}~g" /home/mtn/sampleFiles/hosts
-sed -i "s~X.Y.Z.P~10.1.1.80~g" /home/mtn/sampleFiles/hosts  ### VM IP
-sed -i "s~A.B.C.D~10.10.10.1~g" /home/mtn/sampleFiles/hosts  ## Palo ALto IP to send API requests to
+#sed -i "s~X.Y.Z.P~10.1.1.80~g" /home/mtn/sampleFiles/hosts  ### VM IP
+#sed -i "s~A.B.C.D~10.10.10.1~g" /home/mtn/sampleFiles/hosts  ## Palo ALto IP to send API requests to
 
-echo
-printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
-cp /home/mtn/sampleFiles/hosts /etc/hosts
-cp /home/mtn/sampleFiles/hostsTemplate /home/mtn/sampleFiles/hosts
+#echo
+#printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
+#cp /home/mtn/sampleFiles/hosts /etc/hosts
+#cp /home/mtn/sampleFiles/hostsTemplate /home/mtn/sampleFiles/hosts
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Restarting Network services. Please wait."

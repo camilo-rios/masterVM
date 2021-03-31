@@ -106,19 +106,24 @@ sed -i -e "s~gwVlan2~$gwVlan2~g" /usr/local/src/sampleFiles/interfaces
 sed -i -e "s~C.C.C.C~$vlan2IPaddress~g" /usr/local/src/sampleFiles/interfaces
 sed -i -e "s~portNumber~$port~g" /usr/local/src/sampleFiles/client.conf 
 sed -i -e "s~username~$username~g" /usr/local/src/sampleFiles/login.conf
-sed -i "s~masterVM~$username"-masterVM"~g" /etc/hosts
+sed -i "s~masterVM~$username"-masterVM"~g" /usr/local/src/sampleFiles/hosts
 
 echo
 printf '\e[1;34m%-6s\e[m\n' "Setting configuration files in place"
 cp /usr/local/src/sampleFiles/interfaces /etc/network/interfaces
 cp /usr/local/src/sampleFiles/client.conf /etc/openvpn/client.conf
 cp /usr/local/src/sampleFiles/login.conf /etc/openvpn/login.conf
+cp /usr/local/src/sampleFiles/hosts /etc/hosts
+
+##### once samplefiles are modified they are overwritten with templates
+##### in case the script is re-run
 cp /usr/local/src/sampleFiles/interfacesTemplate /usr/local/src/sampleFiles/interfaces
 cp /usr/local/src/sampleFiles/clientTemplate.conf /usr/local/src/sampleFiles/client.conf
 cp /usr/local/src/sampleFiles/loginTemplate.conf /usr/local/src/sampleFiles/login.conf
+cp /usr/local/src/sampleFiles/hostsTemplate /usr/local/src/sampleFiles/hosts
 echo
 printf '\e[1;34m%-6s\e[m\n' "Restarting Network services and openvpn services.Please wait."
-hostamectl set-hostname $username"-masterVM"
+hostnamectl set-hostname $username"-masterVM"
 systemctl restart networking.service
 /etc/init.d/openvpn restart
 
