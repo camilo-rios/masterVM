@@ -81,12 +81,12 @@ gwVlan2=${vlan2IPaddress%.*}".""$((fourthOctet+1))"
 
 ##########
 echo
-printf '\e[1;34m%-6s\e[m' "Enter the username for VPN authentication. ThreeLetterCustomer-VesselName (ex. NAK-AlGharrafa) : "
+printf '\e[1;34m%-6s\e[m' "Enter the username for VPN authentication. ThreeLetterCustomer-VesselName (ex. NAK-AlGharrafa, no special characters) : "
 read username
 #echo "port: " $port
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
-echo "vlan 1interface (ens192) IP  : "$nativeIpAddress
+echo "vlan 1 interface (ens192) IP  : "$nativeIpAddress
 echo "vlan 2 interface (ens224) IP  : "$vlan2IPaddress
 echo "Username for VPN authentication : "$username
 printf "Port number for VPN connection (this is the port to be configured in the OBM GUI): "$port
