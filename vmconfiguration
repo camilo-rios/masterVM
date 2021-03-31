@@ -23,10 +23,8 @@ case $option in
     apireq
     ;;
     4)
-    printf '\e[1;34m%-6s\e[m\n' "Restarting SIEM system monitor service."
-    service scsm start
-    printf '\e[1;34m%-6s\e[m\n' "Please verify port 514 is open and used by scsm process:"
-    ss -tulnp
+    siemconfig
+    ;;
 esac
 
 

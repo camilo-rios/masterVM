@@ -1,0 +1,10 @@
+#!/bin/bash
+
+vlan2IPaddress=`ip addr show ens224 | awk '$1 == "inet" {gsub(/\/.*$/, "", $2); print $2}'`
+sed -i "s~vlan2IPaddress~$vlan2IPaddress~g" /usr/local/src/sampleFiles/scsm.ini
+cp /usr/local/src/sampleFiles/scsm.ini /opt/logrhythm/scsm/config/scsm.ini
+cp /usr/local/src/sampleFiles/scsm.iniTemplate /usr/local/src/sampleFiles/scsm.ini
+printf '\e[1;34m%-6s\e[m\n' "Restarting SIEM system monitor service."
+service scsm start
+printf '\e[1;34m%-6s\e[m\n' "Please verify port 514 is open and used by scsm process:"
+ss -tulnp
