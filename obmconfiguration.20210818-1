@@ -46,37 +46,13 @@ while [ $correctIP == 'n' ]
 		fi
 	done
 
-
-############## This section confirms if the default FBB IPs are going to be used , ask for new ones if not
-
-printf '\e[1;34m%-6s\e[m\n' "Is default configuration with subnet 192.168.0.0/24 for FBB going to be applied (y/n)?"
-read FBBOrig
-
-if [[ "$FBBOrig" == 'n' ]]
-then
-	correctIP='n'
-	while [ $correctIP == 'n' ]
-		do
-			printf '\e[1;34m%-6s\e[m' "Please enter FBB IP for third interface (A.B.C.D/Z format) "
-			read  ipAddress
-			if [[ "$ipAddress" != *"/"* ]]
-			then
-				printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again "
-				#printf '\e[1;34m%-6s\e[m' "Enter native vlan IP for secondary interface (A.B.C.D/Z format) : "
-				#read nativeIpAddress
-			else
-				correctIP='y'
-			fi
-		done
-	printf '\e[1;34m%-6s\e[m' "Please enter FBB Default GW "
-	read gwAddress
-else
-	ipAddress='192.168.0.120/24'  ###3  Static IPs assigned for FBB	
-	gwAddress='192.168.0.1'
-fi
-
-
 ######### This section gets the port to use for the OBM tunnel. It is built using the second octet and the last two digits of the subnet network 
+
+
+ipAddress='192.168.0.120/24'  ###3  Static IPs assigned for FBB
+gwAddress='192.168.0.1'
+
+
 ####### this section extracts the port to be used for OBM connection
 ####### it uses the last two digits of the SUBNET IP
 while IFS=  read -r line
@@ -139,29 +115,6 @@ cp /usr/local/src/sampleFiles/client.conf /etc/openvpn/client.conf
 cp /usr/local/src/sampleFiles/login.conf /etc/openvpn/login.conf
 cp /usr/local/src/sampleFiles/hosts /etc/hosts
 
-
-echo
-printf '\e[1;34m%-6s\e[m\n' "Configuring for dualog functionality."
-echo
-
-
-############### interface file configuration with fourth interface -- receives http request ###########
-printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files for dualog"
-echo
-echo  >> /etc/network/interfaces
-echo  >> /etc/network/interfaces
-echo  "auto ens161" >> /etc/network/interfaces
-echo  "iface ens161 inet static" >> /etc/network/interfaces
-echo -e "\taddress 10.1.1.80/24" >> /etc/network/interfaces
-###################################################################################
-
-############### interface file configuration with fifth interface -- sends API calls###########
-echo  >> /etc/network/interfaces
-echo  >> /etc/network/interfaces
-echo  "auto ens193" >> /etc/network/interfaces
-echo  "iface ens193 inet static" >> /etc/network/interfaces
-echo -e "\taddress 10.10.10.2/24" >> /etc/network/interfaces
-
 ##### once samplefiles are modified they are overwritten with templates
 ##### in case the script is re-run
 cp /usr/local/src/sampleFiles/interfacesTemplate /usr/local/src/sampleFiles/interfaces
@@ -172,7 +125,7 @@ echo
 printf '\e[1;34m%-6s\e[m\n' "Restarting Network services and openvpn services.Please wait."
 hostnamectl set-hostname $username"-masterVM"
 systemctl restart networking.service
-#/etc/init.d/openvpn restart
+/etc/init.d/openvpn restart
 
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please verify IPTABLES NAT rule on interface ens224 is set:  "

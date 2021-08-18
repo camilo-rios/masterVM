@@ -1,0 +1,36 @@
+#!/bin/bash
+
+nativeIpAddress='10.249.12.102/27'
+vlan2IPaddress='10.249.44.102/27'
+while IFS=  read -r line
+do
+	if [[ "$line" == *"Network address"* ]];
+	then 
+		#echo $line
+		secondOctet="$(cut -d'.' -f2 <<<"$line")"
+		thirdOctet="$(cut -d'.' -f3 <<<"$line")"
+		fourthOctet="$(cut -d'.' -f4 <<<"$line")"
+		echo "fouth octect: " $fourthOctet
+		gwLastOctet=$((fourthOctet+1))
+		gwCorporate="10."$secondOctet"."$thirdOctet"."$((fourthOctet+1))""
+		echo "gw : " $gwCorporate
+		port=$((thirdOctet*8))
+		port=$((port+ $((fourthOctet/32)) ))
+		echo "port: " $port
+		if [[ $port -lt 10 ]]
+		then
+			port=${secondOctet: -2}'00'$port
+			echo "between 0 and 10"
+		elif [[ $port -eq 10 || ($port -gt 10 && $port -lt 100) ]]
+		then
+			port=${secondOctet: -2}'0'$port
+			echo "between 10 and 99"
+		else
+			port=${secondOctet: -2}$port
+		fi
+		echo "port: " $port
+	fi
+done < <(sipcalc  $nativeIpAddress)
+
+gwVlan2=${vlan2IPaddress%.*}".""$((fourthOctet+1))"
+echo "gwvlan2 : " $gwVlan2

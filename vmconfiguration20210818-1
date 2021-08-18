@@ -1,8 +1,8 @@
 #!/bin/bash
 clear
 printf '\e[1;32m%-6s\e[m\n' "Please select the option accordingly:"
-printf '\e[1;34m%-6s\e[m\n' "1. Configure Master VM "
-printf '\e[1;34m%-6s\e[m\n' "2. Activate Dualog feature"
+printf '\e[1;34m%-6s\e[m\n' "1. Configure VM as OBM Client only"
+printf '\e[1;34m%-6s\e[m\n' "2. Configure VM as OBM Client and Dualog switch server"
 printf '\e[1;34m%-6s\e[m\n' "3. Get Paloalto API key"
 printf '\e[1;34m%-6s\e[m\n' "4. Activate SIEM system monitor (select if the solution includes SIEM option and after 1 or 2 has finished)"
 read option
@@ -12,11 +12,12 @@ case $option in
 
     1)
     obmconfiguration
-    apireq
     ;;
 
     2)
-    startDualog
+    obmconfiguration
+    dualogconfig
+    apireq
     ;;
 
     3)

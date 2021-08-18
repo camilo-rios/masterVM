@@ -1,0 +1,13 @@
+
+paloaltoIP="10.217.16.203"
+username="admn"
+password="Gee33025!"
+apikeyreq=`curl -m 3 -s -k -X GET 'https://'${paloaltoIP}'/api/?type=keygen&user='$username'&password='$password''`
+
+if [[ "$apikeyreq" == *'error'* ]]
+then
+	echo "Please check error"
+else
+	apikey2=${apikeyreq%"</key"*}
+	echo ${apikey2#*"key>"}
+fi

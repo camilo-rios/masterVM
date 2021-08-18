@@ -6,7 +6,7 @@ echo
 
 
 ############### interface file configuration with fourth interface -- receives http request ###########
-printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files"
+printf '\e[1;34m%-6s\e[m\n' "Preparing configuration files for dualog"
 echo
 echo  >> /etc/network/interfaces
 echo  >> /etc/network/interfaces
