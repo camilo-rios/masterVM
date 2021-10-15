@@ -2,3 +2,4 @@
 
 systemctl start apache2
 update-rc.d apache2 enable
+printf '\e[1;32m%-6s\e[m\n' "Dualog succesfully started"

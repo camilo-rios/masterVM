@@ -4,19 +4,19 @@ clear
 echo
 printf '\e[1;34m%-6s\e[m\n' "This section will configure the interfaces for this box and also the OBM client files. "
 printf '\e[1;34m%-6s\e[m\n' "Interface distribution "
-printf '\e[1;34m%-6s\e[m\n' "First interface (ens192) ->  Vlan 1 (internal devices for OBM)"
+printf '\e[1;34m%-6s\e[m\n' "First interface  (ens192) ->  Vlan 1 (internal devices for OBM)"
 printf '\e[1;34m%-6s\e[m\n' "Second interface (ens224) ->  Vlan 2 (management)"
-printf '\e[1;34m%-6s\e[m\n' "Third interface (ens256) ->  FBB (openvpn tunnel)"
+printf '\e[1;34m%-6s\e[m\n' "Third interface  (ens256) ->  FBB (openvpn tunnel)"
 echo
 finalConfirmation='n'
 while [ $finalConfirmation = 'n' ]
 do
 echo
-###### This section gets the IP for the primary interface and makes sure it is entered properly
+###### This section gets the IP for the primary interface and makes sure it is entered properly  ############
 correctIP='n'
 while [ $correctIP == 'n' ]
 	do
-		printf '\e[1;34m%-6s\e[m' "Please enter native vlan IP for first  interface (A.B.C.D/Z format). This is the 6th IP address in the subnet : "
+		printf '\e[1;34m%-6s\e[m' "Please enter native vlan IP for first  interface (A.B.C.D/Z format) =  "
 		read nativeIpAddress 
 		if [[ "$nativeIpAddress" != *"/"* ]]
 		then
@@ -27,29 +27,35 @@ while [ $correctIP == 'n' ]
 			correctIP='y'
 		fi
 	done
+####################################################################################################################
 
-######### This section gets the port to use for the OBM tunnel. It is built using the second octet and the last two digits of the subnet network 
+################## Gets Def GW for pimary interface ################################################################
+printf '\e[1;34m%-6s\e[m' "Please enter Default GW for native vlan 1 interface = "
+read gwCorporate 
+#####################################################################################################################
 
-###### This section gets the IP for the secondary interface and makes sure it is entered properly
+###### This section gets the IP for the secondary interface and makes sure it is entered properly ###################
 correctIP='n'
 while [ $correctIP == 'n' ]
 	do
-		printf '\e[1;34m%-6s\e[m' "Please enter vlan IP for secondary interface - vlan 2(A.B.C.D/Z format). This is the 6th IP address in the subnet : "
+		printf '\e[1;34m%-6s\e[m' "Please enter vlan IP for secondary interface - vlan 2(A.B.C.D/Z format) = "
 		read  vlan2IPaddress
 		if [[ "$vlan2IPaddress" != *"/"* ]]
 		then
 			printf '\e[1;31m%-6s\e[m\n' "It seems you didn't specify the subnet. Format needs to be A.B.C.D/Z. Please try again "
-			#printf '\e[1;34m%-6s\e[m' "Enter native vlan IP for secondary interface (A.B.C.D/Z format) : "
-			#read nativeIpAddress
 		else
 			correctIP='y'
 		fi
 	done
+####################################################################################################################
 
+################## Gets Def GW for management interface ################################################################
+printf '\e[1;34m%-6s\e[m' "Please enter Default GW for management vlan 2 interface = "
+read gwVlan2 
+#####################################################################################################################
 
 ############## This section confirms if the default FBB IPs are going to be used , ask for new ones if not
-
-printf '\e[1;34m%-6s\e[m\n' "Is default configuration with subnet 192.168.0.0/24 for FBB going to be applied (y/n)?"
+printf '\e[1;34m%-6s\e[m\n' "Is the default configuration with subnet 192.168.0.0/24 for FBB going to be applied  (y/n)?"
 read FBBOrig
 
 if [[ "$FBBOrig" == 'n' ]]
@@ -57,7 +63,7 @@ then
 	correctIP='n'
 	while [ $correctIP == 'n' ]
 		do
-			printf '\e[1;34m%-6s\e[m' "Please enter FBB IP for third interface (A.B.C.D/Z format) "
+			printf '\e[1;34m%-6s\e[m' "Please enter FBB IP for third interface (A.B.C.D/Z format) =  "
 			read  ipAddress
 			if [[ "$ipAddress" != *"/"* ]]
 			then
@@ -68,50 +74,60 @@ then
 				correctIP='y'
 			fi
 		done
-	printf '\e[1;34m%-6s\e[m' "Please enter FBB Default GW "
+	printf '\e[1;34m%-6s\e[m' "Please enter FBB Default GW =  "
 	read gwAddress
 else
 	ipAddress='192.168.0.120/24'  ###3  Static IPs assigned for FBB	
 	gwAddress='192.168.0.1'
 fi
-
+#######################################################################################################################
 
 ######### This section gets the port to use for the OBM tunnel. It is built using the second octet and the last two digits of the subnet network 
 ####### this section extracts the port to be used for OBM connection
 ####### it uses the last two digits of the SUBNET IP
-while IFS=  read -r line
-do
-	if [[ "$line" == *"Network address"* ]];
-	then 
-		#echo $line
-		secondOctet="$(cut -d'.' -f2 <<<"$line")"
-		thirdOctet="$(cut -d'.' -f3 <<<"$line")"
-		fourthOctet="$(cut -d'.' -f4 <<<"$line")"
-		gwCorporate="10."$secondOctet"."$thirdOctet"."$((fourthOctet+1))"" ### default gw  is next IP after the subnet network
-		port=$((thirdOctet*8))  
-		port=$((port+ $((fourthOctet/32)) ))  #### port is calculated based on the third octect and the fourth octect
-		if [[ $port -lt 10 ]]                 #### since there are 8 subnets for each /24 subnet then we do groups of 8  
-		then
-			port=${secondOctet: -2}'00'$port
-		elif [[ $port -eq 10 || ($port -gt 10 && $port -lt 100) ]]
-		then
-			port=${secondOctet: -2}'0'$port
-		else
-			port=${secondOctet: -2}$port
-		fi
-	fi
-done < <(sipcalc  $nativeIpAddress)
-gwVlan2=${vlan2IPaddress%.*}".""$((fourthOctet+1))"
+#while IFS=  read -r line
+#do
+#	if [[ "$line" == *"Network address"* ]];
+#	then 
+#		#echo $line
+#		secondOctet="$(cut -d'.' -f2 <<<"$line")"
+#		thirdOctet="$(cut -d'.' -f3 <<<"$line")"
+#		fourthOctet="$(cut -d'.' -f4 <<<"$line")"
+#		gwCorporate="10."$secondOctet"."$thirdOctet"."$((fourthOctet+1))"" ### default gw  is next IP after the subnet network
+#		port=$((thirdOctet*8))  
+#		port=$((port+ $((fourthOctet/32)) ))  #### port is calculated based on the third octect and the fourth octect
+#		if [[ $port -lt 10 ]]                 #### since there are 8 subnets for each /24 subnet then we do groups of 8  
+#		then
+#			port=${secondOctet: -2}'00'$port
+#		elif [[ $port -eq 10 || ($port -gt 10 && $port -lt 100) ]]
+#		then
+#			port=${secondOctet: -2}'0'$port
+#		else
+#			port=${secondOctet: -2}$port
+#		fi
+#	fi
+#done < <(sipcalc  $nativeIpAddress)
+#gwVlan2=${vlan2IPaddress%.*}".""$((fourthOctet+1))"
 
-##########
+################## Gets VPN port number  ##################################################################################
+printf '\e[1;34m%-6s\e[m' "Please enter port number to use for VPN connection = "
+read port 
+###########################################################################################################################
+
+###################### Gets username to be used for VPN tunnel connection ##################################################
 echo
-printf '\e[1;34m%-6s\e[m' "Enter the username for VPN authentication. ThreeLetterCustomer-VesselName (ex. NAK-AlGharrafa, no special characters) : "
+printf '\e[1;34m%-6s\e[m' "Enter the username for VPN authentication. ThreeLetterCustomer-VesselName (ex. NAK-AlGharrafa, no special characters) =  "
 read username
-#echo "port: " $port
+############################################################################################################################
+
 echo 
 printf '\e[1;34m%-6s\e[m\n' "Please review the info and confirm it is correct"
 echo "vlan 1 interface (ens192) IP  : "$nativeIpAddress
+echo "vlan 1 def GW (ens192) IP     : "$gwCorporate
 echo "vlan 2 interface (ens224) IP  : "$vlan2IPaddress
+echo "vlan 2 def GW (ens224) IP     : "$gwVlan2
+echo "FBB interface (ens256) IP     : "$ipAddress
+echo "FBB Def GW    (ens256) IP     : "$gwAddress
 echo "Username for VPN authentication : "$username
 printf "Port number for VPN connection (this is the port to be configured in the OBM GUI): "$port
 echo

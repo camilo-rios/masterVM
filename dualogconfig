@@ -39,12 +39,12 @@ echo
 
 
 
-#printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using default GEE admin credentials"
+printf '\e[1;34m%-6s\e[m\n' "Requesting API key to Paloalto FW. Request is done using default GEE admin credentials"
 
-#apikeyreq=`curl -s -k -X GET 'https://paloaltofw/api/?type=keygen&user=admin&password=Gee33025!'`
+apikeyreq=`curl -s -k -X GET 'https://paloaltofw/api/?type=keygen&user=admin&password=Gee33025!'`
 
-#apikey2=${apikeyreq%"</key"*}
-#echo ${apikey2#*"key>"} > /var/www/paloalto/policyrules/apitest.txt
+apikey2=${apikeyreq%"</key"*}
+echo ${apikey2#*"key>"} > /var/www/paloalto/policyrules/apitest.txt
 
 
 
